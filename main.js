@@ -2,8 +2,9 @@ let http = require('http');
 let express = require('express');
 let app = express();
 
-let saveImage = require('./upload');
+let saveImage = require('./saveImage');
 let routeLogin = require('./login');
+let nlpModule = require('./nlp');
 
 app.get('/login', (req, res) => {
     let info = '';
@@ -17,14 +18,15 @@ app.get('/login', (req, res) => {
 });
 
 app.get('/query', (req, res) => {
-    let enity = '';
+    let queryContent = '';
     req.on('data', (chunk) => {
-        enity += String(chunk);
+        queryContent += String(chunk);
     });
     req.on('end', () => {
-        let enityJson = JSON.parse(enity);
-        if (enity['query-type'] == 'nl') {
-
+        let enityJson = JSON.parse(queryContent);
+        if (queryContent['query-type'] == 'nl') {
+            var result = nlpModule.nlProcess(queryContent['query-content']);
+            res.write(result);
         }
     });
 });
@@ -32,13 +34,13 @@ app.get('/query', (req, res) => {
 let imageFileName = '';
 
 app.post('/upload', (req, res) => {
-    let enity = '';
+    let queryContent = '';
     req.on('data', (chunk) => {
-        enity += String(chunk);
+        queryContent += String(chunk);
     });
     req.on('end', () => {
-        let enityJson = JSON.parse(enity);
-        if (enity['upload-type'] == 'image') {
+        let enityJson = JSON.parse(queryContent);
+        if (queryContent['upload-type'] == 'image') {
 
         }
     });
