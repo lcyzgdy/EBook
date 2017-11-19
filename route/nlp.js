@@ -1,37 +1,37 @@
-const Client = require('../nlp-module/luis_sdk')
-let key = require('../private/private')
-let https = require('https');
+//const Client = require('../nlp-module/luis_sdk')
+let key = require('../private/private');
+//let https = require('https');
 let request = require('request');
+let querystring = require('querystring');
 
-exports.myNlpProcessAsync = (str, callback) => {
-    console.log(endPoint + String(str));
+/**
+* @param str string
+* @param callback (response body)
+*/
+exports.myNlpProcess = (str, callback) => {
     let result = '';
-    https.get(endPoint + String(str), (res) => {
-        console.log(res.statusCode);
-        res.on('error', (err) => {
-            console.log(err.message);
-            result = err.message;
-        });
-        let data = '';
-        res.on('data', (chunk) => {
-            data += chunk;
-        });
-        res.on('end', () => {
-            result = String(data);
-            callback(result);
-        });
+    get(String(str), (body) => {
+        callback(body);
     });
 }
 
 var endPoint = "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/";
 var appId = key.AppId;
 
-var get = (utterance) => {
+var get = (utterance, callback) => {
     var queryParams = {
         "subscription-key": key.AppKey,
         "timezoneOffset": "0",
         "verbose": true,
         "q": utterance
     }
-    var req = endPoint + appId + '?' + querystring.stringify(queryParams);
+    var requestUrl = endPoint + appId + '?' + querystring.stringify(queryParams);
+    //console.log(requestUrl);
+    request(requestUrl, (err, res, body) => {
+        if (err) {
+            console.log(err);
+            return;
+        }
+        callback(body);
+    })
 };

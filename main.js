@@ -1,10 +1,12 @@
+import { myNlpProcess } from './route/nlp1';
+
 let http = require('http');
 let express = require('express');
 let app = express();
 
-let saveImage = require('./saveImage');
-let routeLogin = require('./login');
-let nlpModule = require('./nlp');
+let saveImage = require('./route/saveImage');
+let routeLogin = require('./route/login');
+let nlpModule = require('./route/nlp');
 
 app.get('/login', (req, res) => {
     let info = '';
@@ -25,7 +27,9 @@ app.get('/query', (req, res) => {
     req.on('end', () => {
         let enityJson = JSON.parse(queryContent);
         if (queryContent['query-type'] == 'nl') {
-            var result = nlpModule.nlProcess(queryContent['query-content']);
+            var result = nlpModule.myNlpProcess(queryContent['query-content'], () => {
+                
+            });
             res.write(result);
         }
     });
