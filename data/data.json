@@ -1,7 +1,5 @@
 {"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"张三","bookName":"经济学原理","price":35,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"a4de01f0-cdbf-11e7-8731-81bdd8c06262"}
-{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"李四","bookName":"计算机科学导论","price":20,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"dfc8f030-cdfc-11e7-86aa-53a48d4f6708"}
-{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"李四","bookName":"计算机科学导论","price":20,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"cb1261a0-ce04-11e7-aa58-393011fa2cf8"}
-{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"李四","bookName":"计算机科学导论","price":20,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"ed0db8e0-ce04-11e7-bb63-15482e237eae"}
-{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"李四","bookName":"计算机科学导论","price":20,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"07042540-ce05-11e7-a474-f191fb2ec2a9"}
-{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"李四","bookName":"计算机科学导论","price":20,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"37dc9210-ce05-11e7-8ca7-a1482c0548a6"}
-{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"李四","bookName":"计算机科学导论","price":20,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"4d6459b0-ce05-11e7-ba58-ed2d412868f7"}
+{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"李四","bookName":"毛泽东思想和中国特色社会主义理论体系概论","price":20,"author":null,"publisher":"高等教育出版社","remark":1,"uuid":"4d6459b0-ce05-11e7-ba58-ed2d412868f7"}
+{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"王五","bookName":"计算机网络","price":41,"author":"谢希仁","publisher":"清华大学出版社","remark":1,"uuid":"cb1261a0-ce04-11e7-aa58-393011fa2cf8"}
+{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"赵六","bookName":"计算机组成原理","price":20,"author":null,"publisher":"清华大学出版社","remark":1,"uuid":"ed0db8e0-ce04-11e7-bb63-15482e237eae"}
+{"userId":"e0d9d3862dfb270de65719d43749df5e","sellFrom":"马七","bookName":"三国演义","price":50,"author":"罗贯中","publisher":null,"remark":1,"uuid":"07042540-ce05-11e7-a474-f191fb2ec2a9"}

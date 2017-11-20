@@ -1,7 +1,8 @@
 let nlp = require('./route/nlp');
 let sell = require('./data/sell');
+let user = require('./data/userInfo');
 
-nlp.myNlpProcess('我想买计导', (err, intent, entities) => {
+/*nlp.myNlpProcess('我想买计导', (err, intent, entities) => {
     if (err) {
         console.log(err.message);
         return;
@@ -12,8 +13,9 @@ nlp.myNlpProcess('我想买计导', (err, intent, entities) => {
         console.log(JSON.stringify(element));
     })
 })
+*/
 
-sell.addSellData('e0d9d3862dfb270de65719d43749df5e', '李四', '计算机科学导论', 20, null, '清华大学出版社', '', (err, uuid) => {
+user.searchUserByUuid('e0d9d3862dfb270de65719d43749df5e', (err, info) => {
     if (err) {
         console.log(err.message);
     }

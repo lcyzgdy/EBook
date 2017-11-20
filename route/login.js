@@ -9,7 +9,7 @@ let crypto = require('crypto');
  */
 exports.routeLogin = (username, password, callback) => {
     let token = md5sum(username + password);
-    user.searchUser(token, callback);
+    user.searchUserByToken(token, callback);
 }
 
 function md5sum(str) {

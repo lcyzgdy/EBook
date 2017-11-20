@@ -6,7 +6,7 @@ let uuid = require('node-uuid');
  * @param {string} token 
  * @param {(err: Error, userUuid: string, userInfo: any) => void} callback
  */
-exports.searchUser = (token, callback) => {
+exports.searchUserByToken = (token, callback) => {
     fs.readFile('./data/userInfo.json', (err, data) => {
         if (err) {
             callback(err, null);
@@ -15,14 +15,39 @@ exports.searchUser = (token, callback) => {
         let allUser = String(data).split('\n');
         for (var one of allUser) {
             if (one == '') continue;
-            if (JSON.parse(one)['user'] == token) {
-                callback(null, JSON.parse(one)['uuid'], JSON.parse(one)['info']);
+            let oneJson = JSON.parse(one);
+            if (oneJson['user'] == token) {
+                callback(null, oneJson['uuid'], JSON.parse(one)['info']);
                 return;
             }
         }
         addNewUser(token, callback);
     })
 }
+
+/**
+ * 通过uuid查询用户
+ * @param {string} uuid 
+ * @param {(err: Error, userInfo: any) => void} callback 
+ */
+exports.searchUserByUuid = (uuid, callback) => {
+    fs.readFile('./data/userInfo.json', (err, data) => {
+        if (err) {
+            callback(err, null);
+            return;
+        }
+        let allUser = String(data).split('\n');
+        for (var one of allUser) {
+            if (one == '') continue;
+            if (JSON.parse(one)['user'] == uuid) {
+                callback(null, JSON.parse(one)['info']);
+                return;
+            }
+        }
+        callback(new Error('Not Found'), null);
+    })
+}
+
 /**
  * @param {string} token 
  * @param {(err: Error, userUuid: string, userInfo: any) => void} callback
@@ -38,7 +63,7 @@ let addNewUser = (token, callback) => {
         newUser['user'] = token;
         newUser['uuid'] = a;
         newUser['info'] = JSON.parse('{"name": "张三", "age": "20"}');
-        fs.write(fd, JSON.stringify(newUser), (err) => {
+        fs.write(fd, JSON.stringify(newUser) + '\n', (err) => {
             if (err) {
                 callback(err, null);
                 fs.closeSync(fd);

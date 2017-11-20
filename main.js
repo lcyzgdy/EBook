@@ -1,5 +1,3 @@
-import { myNlpProcess } from './route/nlp1';
-
 let http = require('http');
 let express = require('express');
 let app = express();
@@ -8,7 +6,14 @@ let saveImage = require('./route/saveImage');
 let login = require('./route/login');
 let nlpModule = require('./route/nlp');
 
-app.get('/login', (req, res) => {
+app.get('/', (req, res) => {
+    console.log('test');
+    res.write('sdfghssjkl');
+    res.end();
+});
+
+app.post('/login', (req, res) => {
+    console.log('login');
     let info = '';
     req.on('data', (chunk) => {
         info += String(chunk);
@@ -25,11 +30,13 @@ app.get('/login', (req, res) => {
             json['uuid'] = userUuid;
             json['info'] = userInfo;
             res.write(JSON.stringify(json));
+            res.end();
         });
     });
 });
 
-app.get('/query', (req, res) => {
+app.post('/query', (req, res) => {
+    console.log('query');
     let queryContent = '';
     req.on('data', (chunk) => {
         queryContent += String(chunk);
@@ -42,7 +49,11 @@ app.get('/query', (req, res) => {
                     res.write('{"status": 404}');
                     return;
                 }
-                res.write(result);
+                var json = JSON.parse('{}');
+                json['intent'] = intent;
+                json['entities'] = entities;
+                res.write(JSON.stringify(json));
+                res.end();
             });
         }
     });
