@@ -37,9 +37,9 @@ app.get('/query', (req, res) => {
     req.on('end', () => {
         let enityJson = JSON.parse(queryContent);
         if (queryContent['query-type'] == 'nl') {
-            nlpModule.myNlpProcess(queryContent['query-content'], (err, result) => {
+            nlpModule.myNlpProcess(queryContent['query-content'], (err, intent, entities) => {
                 if (err) {
-                    res.write('{"status": 400}');
+                    res.write('{"status": 404}');
                     return;
                 }
                 res.write(result);
