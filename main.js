@@ -4,7 +4,7 @@ let app = express();
 
 let saveImage = require('./route/saveImage');
 let login = require('./route/login');
-let nlpModule = require('./route/nlp');
+let nlp = require('./route/nlp');
 
 app.get('/', (req, res) => {
     console.log('test');
@@ -44,7 +44,8 @@ app.post('/query', (req, res) => {
     req.on('end', () => {
         let enityJson = JSON.parse(queryContent);
         if (queryContent['query-type'] == 'nl') {
-            nlpModule.myNlpProcess(queryContent['query-content'], (err, intent, entities) => {
+            let moreIntelligent = queryContent['more-intelligent'];
+            nlp.myNlpProcess(queryContent['query-content'], moreIntelligent, (err, intent, entities) => {
                 if (err) {
                     res.write('{"status": 404}');
                     return;

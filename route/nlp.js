@@ -1,14 +1,22 @@
 let key = require('../private/private');
 let request = require('request');
 let querystring = require('querystring');
+let searchSell = require('../data/sell');
+let userInfo = require('../data/userInfo');
 
 /**
+* @param {string} userUuid
 * @param {string} str string
+* @param {boolean} moreIntelligent
 * @param {(err: Error, intent: string, entities: []) => void} callback (err, intent and enities)
 */
-exports.myNlpProcess = (str, callback) => {
+exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
     let result = '';
     get(String(str), (err, body) => {
+        if (err) {
+            callback(err, null, null);
+            return;
+        }
         let resultJson = JSON.parse('{}');
         //resultJson['intent'] = body['topScoringIntent']['intent'];
         let intent = body['topScoringIntent']['intent'];
@@ -16,7 +24,7 @@ exports.myNlpProcess = (str, callback) => {
         let entitiesJson = [];
         let enities = body['entities'];
         enities.forEach(element => {
-            if (element['type'] == '固定书目') {
+            if (element['type'] == '已知书目') {
                 element['resolution']['values'].forEach(bookName => {
                     var bookInfo = JSON.parse('{}');
                     bookInfo['text'] = bookName;
@@ -64,9 +72,27 @@ exports.myNlpProcess = (str, callback) => {
                 //resultJson['entities'].push(publisherInfo);
                 entitiesJson.push(publisherInfo);
             }
+            else if (element['type'] == '价格') {
+                var priceInfo = JSON.parse('{}');
+                priceInfo['type'] = '价格';
+                priceInfo['content'] = element['entity'];
+                entitiesJson.push(priceInfo);
+            }
+            else if (element['type'] == 'builtin.currency') {
+                var priceInfo = JSON.parse('{}');
+                priceInfo['type'] = '价格';
+                priceInfo['content'] = element['entity'];
+                entitiesJson.push(priceInfo);
+            }
         });
+        //console.log(intent);
         //console.log(enities[0]['resolution']['values']);
-        callback(err, intent, entitiesJson);
+        if (intent == '卖出') {
+            sellOut(userUuid, entitiesJson, moreIntelligent, callback);
+        }
+        else if (intent == 'None') {
+            callback(null, intent, null);
+        }
     });
 }
 
@@ -78,9 +104,10 @@ var appId = key.AppId;
  * @param {(err: Error, body: any) => void} callback
  */
 var get = (utterance, callback) => {
+    console.log(utterance);
     var queryParams = {
         "subscription-key": key.AppKey,
-        "timezoneOffset": "0",
+        "timezoneOffset": "8.0",
         "verbose": true,
         "q": utterance
     }
@@ -88,7 +115,7 @@ var get = (utterance, callback) => {
     //console.log(requestUrl);
     request(requestUrl, (err, res, body) => {
         console.log()
-        if (res['statusCode'] != 200 && err) {
+        if (res['statusCode'] != 200 || err) {
             err = new Error('failed');
         }
         callback(err, JSON.parse(body));
@@ -96,6 +123,50 @@ var get = (utterance, callback) => {
 };
 
 
+/**
+ * 卖出
+ * @param {string} userUuid
+ * @param {[]} entitiesJson 
+ * @param {boolean} moreIntelligent
+ * @param {(err:Error, intent: string, entities: []) => void} callback
+ */
+let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
+    if (moreIntelligent) {
+        let entitiesFromDatabase = [];
+        let bookName = '';
+        let author = [];
+        let publisher = '';
+        let price = '';
+        entitiesJson.forEach(element => {
+            if (element['type'] == '书名') bookName = element['text'];
+            else if (element['type'] == '作者') author.push(element['text']);
+            else if (element['type'] == '出版社') publisher = element['text'];
+            else if (element['type'] == '价格') price = element['content'];
+        })
+        userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
+            searchSell.addSellData(userUuid, userInfo['name'], bookName, price, author, publisher, '', (err, uuid) => {
+                if (err) {
+                    callback(err, null, null);
+                    return;
+                }
+                callback(null, 'OK', entitiesJson);
+            })
+        })
+    }
+    else {
+        callback(null, '卖出', entitiesJson);
+    }
+}
+
+/**
+ * 查询
+ * @param {[]} entitiesJson 
+ * @param {boolean} moreIntelligent 
+ * @param {(err: Error, intent: string, entities: []) => void} callback 
+ */
+let querySell = (entitiesJson, moreIntelligent, callback) => {
+
+}
 
 
 
@@ -103,10 +174,8 @@ var get = (utterance, callback) => {
 /**自然语言功能
  * 买书（查询数据库中有哪些书可买）
  * 卖书（上传信息）
- * 卖书（上传图片）
  * 换书（查询数据库中有哪些书可换）
  * 捐书（上传信息）
- * 捐书（上传图片）
  * 交流（）
  * 查询（正在卖，有人买，已卖出，发出的帖子，正在捐，已捐出）
  */

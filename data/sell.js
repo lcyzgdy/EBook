@@ -75,8 +75,8 @@ exports.searchSellData = (keyword, callback) => {
     let data = String(fs.readFileSync('./data/data.json')).split('\n');
     let arr = new Map();
     data.forEach(element => {
-        let dis = editDistance(element, keyword);
-        if (dis < 10) {
+        let dis = element.length - editDistance(element, keyword);
+        if (dis > keyword.length - 3) {
             arr.set(element, dis);
         }
     });
@@ -85,7 +85,62 @@ exports.searchSellData = (keyword, callback) => {
         callback(err, null);
         return;
     }
-    callback(null, arr.keys());
+    let temp = []
+    arr.forEach((value, key, arr) => {
+        temp.push(key);
+    });
+    callback(null, temp);
+}
+
+/**
+ * @param {string} bookName
+ * @param {string} author
+ * @param {string} publisher
+ * @param {string} otherInfo
+ * @param {(err: Error, result: any[]) => void} callback
+ */
+exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callback) => {
+    let data = String(fs.readFileSync('./data/data.json')).split('\n');
+    let arr = new Map();
+    data.forEach(element => {
+        let temp = JSON.parse(element);
+        let tempName = temp['bookName'];
+        let tempAuthor = temp['author'];
+        let tempPublisher = temp['publisher'];
+        let tempDetail = temp['detail'];
+        let tempMark = temp['remark'];
+        if (tempMark == 1) {
+            let dis = [];
+            //let dis1 = editDistance(tempName, bookName);
+            if (tempName != '' && bookName != '') dis.push(bookName.length - editDistance(tempName, bookName));
+            //let dis2 = editDistance(tempAuthor, author);
+            if (tempAuthor != '' && author != '') dis.push(author.length - editDistance(tempAuthor, author));
+            //let dis3 = editDistance(tempPublisher, publisher);
+            if (tempPublisher != '' && publisher != '') dis.push(publisher.length - editDistance(tempPublisher, publisher));
+            //let dis4 = editDistance(tempDetail, otherInfo);
+            if (tempDetail != '' && otherInfo != '') dis.push(otherInfo.length - editDistance(tempDetail, otherInfo));
+            let sum = 0;
+            dis.forEach(distance => {
+                sum += distance;
+            });
+            arr.set(element, dis);
+        }
+    });
+    if (arr.size < 1) {
+        let err = new Error('No result');
+        callback(err, null);
+        return;
+    }
+    let temp = []
+    arr.forEach((value, key, arr) => {
+        temp.push(key);
+    });
+    temp = temp.sort((a, b) => {
+        return arr.get(a) > arr.get(b);
+    });
+    while (temp.length > 10)
+        temp.pop();
+    callback(null, temp);
 }
 
 /**

@@ -1,12 +1,18 @@
 let fs = require('fs');
 
-exports.saveImage = async (filename, chunk) => {
-    let fileName = (new Date()).getTime() + '_Image.png';
+/**
+ * 
+ * @param {string} filename 
+ * @param {any} chunk 
+ * @param {(err:Error, imageUri: string) => void} callback
+ */
+exports.saveImage = (filename, chunk, callback) => {
+    fileName += (new Date()).getTime() + '_Image.png';
     fs.writeFile(fileName, chunk, (err) => {
         if (err) {
-            console.log(err.message);
+            callback(err, null);
             return;
         }
-    })
-    return fileName;
+        callback(null, fileName);
+    });
 }

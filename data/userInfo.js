@@ -39,7 +39,7 @@ exports.searchUserByUuid = (uuid, callback) => {
         let allUser = String(data).split('\n');
         for (var one of allUser) {
             if (one == '') continue;
-            if (JSON.parse(one)['user'] == uuid) {
+            if (JSON.parse(one)['uuid'] == uuid) {
                 callback(null, JSON.parse(one)['info']);
                 return;
             }
