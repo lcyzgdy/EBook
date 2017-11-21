@@ -21,6 +21,7 @@ exports.addSellData = (userId, sellFrom, bookName, price, author, publisher, det
     data['price'] = price;
     data['author'] = author;
     data['publisher'] = publisher;
+    data['detail'] = detail;
     //data['ImageUri'] = imageUri;
     data['remark'] = 1;         // 0: 已卖出   1:正在卖
     let thisUuid = uuid.v1();
@@ -103,27 +104,29 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
     let data = String(fs.readFileSync('./data/data.json')).split('\n');
     let arr = new Map();
     data.forEach(element => {
-        let temp = JSON.parse(element);
-        let tempName = temp['bookName'];
-        let tempAuthor = temp['author'];
-        let tempPublisher = temp['publisher'];
-        let tempDetail = temp['detail'];
-        let tempMark = temp['remark'];
-        if (tempMark == 1) {
-            let dis = [];
-            //let dis1 = editDistance(tempName, bookName);
-            if (tempName != '' && bookName != '') dis.push(bookName.length - editDistance(tempName, bookName));
-            //let dis2 = editDistance(tempAuthor, author);
-            if (tempAuthor != '' && author != '') dis.push(author.length - editDistance(tempAuthor, author));
-            //let dis3 = editDistance(tempPublisher, publisher);
-            if (tempPublisher != '' && publisher != '') dis.push(publisher.length - editDistance(tempPublisher, publisher));
-            //let dis4 = editDistance(tempDetail, otherInfo);
-            if (tempDetail != '' && otherInfo != '') dis.push(otherInfo.length - editDistance(tempDetail, otherInfo));
-            let sum = 0;
-            dis.forEach(distance => {
-                sum += distance;
-            });
-            arr.set(element, dis);
+        if (element.length > 0) {
+            let temp = JSON.parse(element);
+            let tempName = temp['bookName'];
+            let tempAuthor = temp['author'];
+            let tempPublisher = temp['publisher'];
+            let tempDetail = temp['detail'];
+            let tempMark = temp['remark'];
+            if (tempMark == 1) {
+                let dis = [];
+                //let dis1 = editDistance(tempName, bookName);
+                if (tempName != '' && bookName != '') dis.push(bookName.length - editDistance(tempName, bookName));
+                //let dis2 = editDistance(tempAuthor, author);
+                if (tempAuthor != '' && author != '') dis.push(author.length - editDistance(tempAuthor, author));
+                //let dis3 = editDistance(tempPublisher, publisher);
+                if (tempPublisher != '' && publisher != '') dis.push(publisher.length - editDistance(tempPublisher, publisher));
+                //let dis4 = editDistance(tempDetail, otherInfo);
+                if (tempDetail != '' && otherInfo != '') dis.push(otherInfo.length - editDistance(tempDetail, otherInfo));
+                let sum = 0;
+                dis.forEach(distance => {
+                    sum += distance;
+                });
+                arr.set(element, dis);
+            }
         }
     });
     if (arr.size < 1) {

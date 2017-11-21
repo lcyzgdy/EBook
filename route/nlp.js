@@ -93,6 +93,9 @@ exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
         else if (intent == 'None') {
             callback(null, intent, null);
         }
+        else if (intent == "查询") {
+            querySell(userUuid, entitiesJson, moreIntelligent, callback);
+        }
     });
 }
 
@@ -160,12 +163,33 @@ let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
 
 /**
  * 查询
+ * @param {string} userUuid
  * @param {[]} entitiesJson 
  * @param {boolean} moreIntelligent 
  * @param {(err: Error, intent: string, entities: []) => void} callback 
  */
-let querySell = (entitiesJson, moreIntelligent, callback) => {
+let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
+    if (moreIntelligent) {
 
+    }
+    else {
+        let entitiesFromDatabase = [];
+        let bookName = '';
+        let author = [];
+        let publisher = '';
+        entitiesJson.forEach(element => {
+            if (element['type'] == '书名') bookName = element['text'];
+            else if (element['type'] == '作者') author.push(element['text']);
+            else if (element['type'] == '出版社') publisher = element['text'];
+        })
+        searchSell.searchSellDataByDetail(bookName, author, publisher, '', (err, result) => {
+            if (err) {
+                callback(err, null, null);
+                return;
+            }
+            callback(null, '查询', result);
+        })
+    }
 }
 
 
