@@ -4,7 +4,7 @@ let eventEmitter = new events.EventEmitter();
 let uuid = require('node-uuid');
 
 /**
- * @param {string} sellFrom 卖家
+ * @param {string} whoWantSell 卖家
  * @param {string} bookName 书名
  * @param {number} price 价格
  * @param {string[]} author 作者，字符串数组
@@ -12,18 +12,47 @@ let uuid = require('node-uuid');
  * @param {string} detail 其它信息
  * @param {(err: Error, uuid: string) => void} callback callback
  */
-exports.addSellData = (userId, sellFrom, bookName, price, author, publisher, detail, callback) => {
+exports.addSellData = (userId, whoWantSell, bookName, price, author, publisher, detail, callback) => {
     detail = detail.replace(',', '，');
     let data = JSON.parse('{}');
     data['userId'] = userId;    // user的token，md5
-    data['sellFrom'] = sellFrom;    // 卖家
+    data['whoWantSell'] = whoWantSell;    // 卖家
     data['bookName'] = bookName;
     data['price'] = price;
     data['author'] = author;
     data['publisher'] = publisher;
     data['detail'] = detail;
+    data['date'] = new Date().getTime();
     //data['ImageUri'] = imageUri;
     data['remark'] = 1;         // 0: 已卖出   1:正在卖
+    let thisUuid = uuid.v1();
+    data['uuid'] = thisUuid;    // 这条记录的uuid
+    dataQueue.push(data);
+    eventEmitter.emit('writeFile', JSON.stringify(dataQueue.pop()));
+    callback(null, thisUuid);
+}
+
+/**
+ * @param {string} userId UserUuid
+ * @param {string} whoWantBuy 买家
+ * @param {string} bookName 书名
+ * @param {string[]} author 作者，字符串数组
+ * @param {string} publisher 出版社
+ * @param {string} detail 其它信息
+ * @param {(err: Error, uuid: string) => void} callback callback
+ */
+exports.addBuyData = (userId, whoWantBuy, bookName, author, publisher, detail, callback) => {
+    detail = detail.replace(',', '，');
+    let data = JSON.parse('{}');
+    data['userId'] = userId;    // user的token，md5
+    data['whoWantBuy'] = whoWantBuy;    // 卖家
+    data['bookName'] = bookName;
+    data['author'] = author;
+    data['publisher'] = publisher;
+    data['detail'] = detail;
+    data['date'] = new Date().getTime();
+    //data['ImageUri'] = imageUri;
+    data['remark'] = 2;         // 0: 已卖出   1:正在卖    2:正在买    3:已完成交易
     let thisUuid = uuid.v1();
     data['uuid'] = thisUuid;    // 这条记录的uuid
     dataQueue.push(data);
@@ -43,7 +72,8 @@ let writeFileHandler = (writeData) => {
             eventEmitter.emit('writeFile', writeData);
             return;
         }
-        console.log(1111);
+        //console.log(1111);
+        console.log('Open data.json');
         fs.write(fd, writeData + '\n', (err) => {
             if (err) {
                 console.log(err.message);
@@ -112,6 +142,60 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
             let tempDetail = temp['detail'];
             let tempMark = temp['remark'];
             if (tempMark == 1) {
+                let dis = [];
+                //let dis1 = editDistance(tempName, bookName);
+                if (tempName != '' && bookName != '') dis.push(bookName.length - editDistance(tempName, bookName));
+                //let dis2 = editDistance(tempAuthor, author);
+                if (tempAuthor != '' && author != '') dis.push(author.length - editDistance(tempAuthor, author));
+                //let dis3 = editDistance(tempPublisher, publisher);
+                if (tempPublisher != '' && publisher != '') dis.push(publisher.length - editDistance(tempPublisher, publisher));
+                //let dis4 = editDistance(tempDetail, otherInfo);
+                if (tempDetail != '' && otherInfo != '') dis.push(otherInfo.length - editDistance(tempDetail, otherInfo));
+                let sum = 0;
+                dis.forEach(distance => {
+                    sum += distance;
+                });
+                arr.set(element, dis);
+            }
+        }
+    });
+    if (arr.size < 1) {
+        let err = new Error('No result');
+        callback(err, null);
+        return;
+    }
+    let temp = []
+    arr.forEach((value, key, arr) => {
+        temp.push(key);
+    });
+    temp = temp.sort((a, b) => {
+        return arr.get(a) > arr.get(b);
+    });
+    while (temp.length > 10)
+        temp.pop();
+    callback(null, temp);
+}
+
+
+/**
+ * @param {string} bookName
+ * @param {string} author
+ * @param {string} publisher
+ * @param {string} otherInfo
+ * @param {(err: Error, result: any[]) => void} callback
+ */
+exports.searchBuyDataByDetail = (bookName, author, publisher, otherInfo, callback) => {
+    let data = String(fs.readFileSync('./data/data.json')).split('\n');
+    let arr = new Map();
+    data.forEach(element => {
+        if (element.length > 0) {
+            let temp = JSON.parse(element);
+            let tempName = temp['bookName'];
+            let tempAuthor = temp['author'];
+            let tempPublisher = temp['publisher'];
+            let tempDetail = temp['detail'];
+            let tempMark = temp['remark'];
+            if (tempMark == 2) {
                 let dis = [];
                 //let dis1 = editDistance(tempName, bookName);
                 if (tempName != '' && bookName != '') dis.push(bookName.length - editDistance(tempName, bookName));

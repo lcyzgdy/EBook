@@ -19,7 +19,13 @@ app.post('/login', (req, res) => {
         info += String(chunk);
     });
     req.on('end', () => {
-        let infoJson = JSON.parse(info);
+        let infoJson = JSON.parse('{}');
+        try {
+            infoJson = JSON.parse(info);
+        } catch (error) {
+            res.end('{"status":400}');
+            return;
+        }
         login.routeLogin(infoJson['username'], infoJson['password'], (err, userUuid, userInfo) => {
             if (err) {
                 res.end('{"status": 400}');

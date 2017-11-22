@@ -3,6 +3,7 @@ let request = require('request');
 let querystring = require('querystring');
 let searchSell = require('../data/sell');
 let userInfo = require('../data/userInfo');
+let exchange = require('../data/exchange');
 
 /**
 * @param {string} userUuid
@@ -22,8 +23,12 @@ exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
         let intent = body['topScoringIntent']['intent'];
         //resultJson['entities'] = [];
         let entitiesJson = [];
-        let enities = body['entities'];
-        enities.forEach(element => {
+        let entities = body['entities'];
+        if (intent == '交换') {
+            doExchange(userUuid, entities, callback);
+            return;
+        }
+        entities.forEach(element => {
             if (element['type'] == '已知书目') {
                 element['resolution']['values'].forEach(bookName => {
                     var bookInfo = JSON.parse('{}');
@@ -96,6 +101,9 @@ exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
         else if (intent == "查询") {
             querySell(userUuid, entitiesJson, moreIntelligent, callback);
         }
+        else {
+            callback(null, intent, entitiesJson);
+        }
     });
 }
 
@@ -120,8 +128,10 @@ var get = (utterance, callback) => {
         console.log()
         if (res['statusCode'] != 200 || err) {
             err = new Error('failed');
+            callback(err, null);
+            return;
         }
-        callback(err, JSON.parse(body));
+        callback(null, JSON.parse(body));
     })
 };
 
@@ -169,29 +179,107 @@ let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
  * @param {(err: Error, intent: string, entities: []) => void} callback 
  */
 let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
-    if (moreIntelligent) {
-
-    }
-    else {
-        let entitiesFromDatabase = [];
-        let bookName = '';
-        let author = [];
-        let publisher = '';
-        entitiesJson.forEach(element => {
-            if (element['type'] == '书名') bookName = element['text'];
-            else if (element['type'] == '作者') author.push(element['text']);
-            else if (element['type'] == '出版社') publisher = element['text'];
-        })
-        searchSell.searchSellDataByDetail(bookName, author, publisher, '', (err, result) => {
-            if (err) {
-                callback(err, null, null);
-                return;
-            }
+    let entitiesFromDatabase = [];
+    let bookName = '';
+    let author = [];
+    let publisher = '';
+    entitiesJson.forEach(element => {
+        if (element['type'] == '书名') bookName = element['text'];
+        else if (element['type'] == '作者') author.push(element['text']);
+        else if (element['type'] == '出版社') publisher = element['text'];
+    })
+    searchSell.searchSellDataByDetail(bookName, author, publisher, '', (err, result) => {
+        if (err) {
+            callback(err, null, null);
+            return;
+        }
+        if (result.length < 1) {
+            userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
+                if (err) {
+                    callback(err, null, null);
+                    return;
+                }
+                searchSell.addBuyData(userUuid, userInfo['name'], bookName, author, publisher, '', (err, uuid) => {
+                    if (err) {
+                        callback(err, null, null);
+                        return;
+                    }
+                    callback(null, '查询', )
+                    return;
+                })
+            })
+        }
+        else {
             callback(null, '查询', result);
-        })
-    }
+        }
+    })
 }
 
+/**
+ * 交换
+ * @param {string} userUuid
+ * @param {[]} entities 
+ * @param {(err: Error, intent: string, entities: []) => void} callback 
+ */
+let doExchange = (userUuid, entities, callback) => {
+    var bookFrom = '';
+    var bookTo = '';
+    var author = [];
+    var publisher = '';
+    exchange.searchByTo(userUuid, bookTo, (err, result) => {
+        if (err) {
+            callback(err, null, null);
+            return;
+        }
+        if (result.length < 1) {
+            exchange.addExchangeData(userUuid, bookFrom, bookTo, author, publisher, '', (err) => {
+                if (err) {
+                    callback(err, null, null);
+                    return;
+                }
+                callback(null, '交换', []);
+            })
+        }
+        else {
+            callback(null, '交换', result);
+        }
+    })
+}
+
+
+
+/**
+ * 计算编辑距离（用向量值计算内存不足）
+ * @param {string} str1 
+ * @param {string} str2 
+ */
+var editDistance = function (str1, str2) {
+    var lenStr1 = str1.length;
+    var lenStr2 = str2.length;
+    if (lenStr1 === 0 || lenStr2 === 0) {
+        return lenStr1 === 0 ? lenStr2 : lenStr1;
+    }
+    var dArr = new Array(lenStr1 + 1);
+    for (var i = 0; i <= lenStr1; i++) {
+        dArr[i] = new Array(lenStr2 + 1);
+        dArr[i][0] = i;
+    }
+
+    for (var j = 0; j <= lenStr2; j++) {
+        dArr[0][j] = j;
+    }
+
+    for (var k = 1; k <= lenStr1; k++) {
+        for (var l = 1; l <= lenStr2; l++) {
+            dArr[k][l] = Math.min(
+                dArr[k - 1][l - 1] + (str1[k - 1] === str2[l - 1] ? 0 : 1),
+                dArr[k - 1][l] + 1,
+                dArr[k][l - 1] + 1
+            )
+        }
+    }
+    return dArr[lenStr1][lenStr2];
+}
 
 
 
