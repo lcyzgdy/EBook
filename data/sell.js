@@ -113,6 +113,8 @@ exports.searchSellData = (keyword, callback) => {
     });
     if (arr.size < 1) {
         let err = new Error('No result');
+        console.log(err.message);
+        console.log('err6');
         callback(err, null);
         return;
     }
@@ -170,6 +172,8 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
     });
     if (arr.size < 1) {
         let err = new Error('No result');
+        console.log(err.message);
+        console.log('err7');
         callback(err, null);
         return;
     }
@@ -233,6 +237,8 @@ exports.searchBuyDataByDetail = (bookName, author, publisher, otherInfo, callbac
     });
     if (arr.size < 1) {
         let err = new Error('No result');
+        console.log(err.message);
+        console.log('err8');
         callback(err, null);
         return;
     }

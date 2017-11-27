@@ -9,6 +9,8 @@ let uuid = require('node-uuid');
 exports.searchUserByToken = (token, callback) => {
     fs.readFile('./data/userInfo.json', (err, data) => {
         if (err) {
+            console.log(err.message);
+            console.log('err9');
             callback(err, null);
             return;
         }
@@ -33,6 +35,8 @@ exports.searchUserByToken = (token, callback) => {
 exports.searchUserByUuid = (uuid, callback) => {
     fs.readFile('./data/userInfo.json', (err, data) => {
         if (err) {
+            console.log(err.message);
+            console.log('err10');
             callback(err, null);
             return;
         }
@@ -55,6 +59,8 @@ exports.searchUserByUuid = (uuid, callback) => {
 let addNewUser = (token, callback) => {
     fs.open('./data/userInfo.json', 'a', (err, fd) => {
         if (err) {
+            console.log(err.message);
+            console.log('err11');
             callback(err, null);
             return;
         }
@@ -65,6 +71,8 @@ let addNewUser = (token, callback) => {
         newUser['info'] = JSON.parse('{"name": "张三", "age": "20"}');
         fs.write(fd, JSON.stringify(newUser) + '\n', (err) => {
             if (err) {
+                console.log(err.message);
+                console.log('err12');
                 callback(err, null);
                 fs.closeSync(fd);
                 return;

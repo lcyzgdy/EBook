@@ -15,6 +15,8 @@ exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
     let result = '';
     get(String(str), (err, body) => {
         if (err) {
+            console.log(err.message);
+            console.log('err1');
             callback(err, null, null);
             return;
         }
@@ -128,6 +130,8 @@ var get = (utterance, callback) => {
         console.log()
         if (res['statusCode'] != 200 || err) {
             err = new Error('failed');
+            console.log(err.message);
+            console.log('err2');
             callback(err, null);
             return;
         }
@@ -196,11 +200,15 @@ let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
         if (result.length < 1) {
             userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
                 if (err) {
+                    console.log(err.message);
+                    console.log('err3');
                     callback(err, null, null);
                     return;
                 }
                 searchSell.addBuyData(userUuid, userInfo['name'], bookName, author, publisher, '', (err, uuid) => {
                     if (err) {
+                        console.log(err.message);
+                        console.log('err4');
                         callback(err, null, null);
                         return;
                     }
@@ -228,6 +236,8 @@ let doExchange = (userUuid, entities, callback) => {
     var publisher = '';
     exchange.searchByTo(userUuid, bookTo, (err, result) => {
         if (err) {
+            console.log(err.message);
+            console.log('err5');
             callback(err, null, null);
             return;
         }
