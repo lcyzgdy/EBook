@@ -54,12 +54,12 @@ app.post('/query', (req, res) => {
                 let moreIntelligent = enityJson['more-intelligent'];
                 let userUuid = enityJson['user-uuid'];
                 if (userUuid === null || userUuid == '') {
-                    res.end('{"status": 404}');
+                    res.end('{"status": 501}');
                     return;
                 }
                 nlp.myNlpProcess(userUuid, enityJson['query-content'], moreIntelligent, (err, intent, entities) => {
                     if (err) {
-                        res.end('{"status": 404}');
+                        res.end('{"status": 502}');
                         return;
                     }
                     var json = JSON.parse('{}');
