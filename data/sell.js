@@ -163,7 +163,6 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
                 dis.forEach(distance => {
                     sum += distance;
                 });
-                console.log(sum);
                 if (sum < 4) {
                     arr.set(element, dis);
                 }
@@ -228,7 +227,7 @@ exports.searchBuyDataByDetail = (bookName, author, publisher, otherInfo, callbac
                 dis.forEach(distance => {
                     sum += distance;
                 });
-                console.log(sum);
+                //console.log(sum);
                 if (sum < 4) {
                     arr.set(element, dis);
                 }

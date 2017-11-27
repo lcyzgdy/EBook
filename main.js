@@ -49,15 +49,19 @@ app.post('/query', (req, res) => {
     });
     req.on('end', () => {
         try {
-            let enityJson = JSON.parse(queryContent);
-            if (enityJson['query-type'] == 'nl') {
-                let moreIntelligent = enityJson['more-intelligent'];
-                let userUuid = enityJson['user-uuid'];
+            let queryJson = JSON.parse(queryContent);
+            if (queryJson['query-type'] == 'nl') {
+                let moreIntelligent = queryJson['more-intelligent'];
+                let userUuid = queryJson['user-uuid'];
                 if (userUuid === null || userUuid == '') {
                     res.end('{"status": 501}');
                     return;
                 }
-                nlp.myNlpProcess(userUuid, enityJson['query-content'], moreIntelligent, (err, intent, entities) => {
+                if (queryJson['query-content'].length < 1) {
+                    res.end('{"status": 510}');
+                    return;
+                }
+                nlp.myNlpProcess(userUuid, queryJson['query-content'], moreIntelligent, (err, uuid, intent, entities) => {
                     if (err) {
                         res.end('{"status": 502}');
                         return;
@@ -66,12 +70,14 @@ app.post('/query', (req, res) => {
                     json['intent'] = intent;
                     json['entities'] = entities;
                     json['status'] = 200;
+                    json['uuid'] = uuid;
                     res.write(JSON.stringify(json));
                     res.end();
                 });
             }
         }
         catch (err) {
+            console.log(err.message);
             res.end('{"status": 500}');
         }
     });

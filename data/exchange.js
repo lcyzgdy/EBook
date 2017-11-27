@@ -27,19 +27,27 @@ exports.searchByUserUuid = (userUuid, callback) => {
  * @param {(err: Error, result: []) => void} callback 
  */
 exports.searchByTo = (userUuid, bookTo, callback) => {
-    fs.readFile('./data/exchangeJson.json', (err, data) => {
+    fs.readFile('./data/exchangeData.json', (err, data) => {
         if (err) {
             callback(err);
             return;
         }
         let result = [];
-        String(data).split('\n').forEach(line => {
-            let json = JSON.parse(line);
-            if (editDistance(bookTo, line['bookTo']) <= 3) {
-                result.push(line);
-            }
-        })
-        callback(null, []);
+        try {
+            String(data).split('\n').forEach(line => {
+                if (line.length > 0) {
+                    let json = JSON.parse(line);
+                    if (editDistance(bookTo, json['bookFrom']) <= 3) {
+                        result.push(line);
+                    }
+                }
+            })
+            callback(null, result);
+        }
+        catch (err) {
+            console.log(err.message);
+            callback(null, []);
+        }
     })
 }
 
@@ -51,17 +59,18 @@ exports.searchByTo = (userUuid, bookTo, callback) => {
  * @param {[]} author 
  * @param {string} publisher 
  * @param {string} detail 
- * @param {(err: Error) => void} callback 
+ * @param {(err: Error, uuid:string) => void} callback 
  */
 exports.addExchangeData = (userUuid, bookFrom, bookTo, author, publisher, detail, callback) => {
     detail = detail.replace(',', '，');
     let data = JSON.parse('{}');
     data['userId'] = userUuid;    // user的token，md5
-    data['bookFrom'] = sellFrom;    // 卖家
-    data['bookTo'] = bookName;
+    data['bookFrom'] = bookFrom;    // 卖家
+    data['bookTo'] = bookTo;
     data['author'] = author;
     data['publisher'] = publisher;
     data['detail'] = detail;
+    data['date'] = (new Date()).getTime();
     //data['ImageUri'] = imageUri;
     data['remark'] = 1;         // 0: 已交换   1:正在交换
     let thisUuid = uuid.v1();
@@ -77,13 +86,13 @@ let dataQueue = [];
  * @param {string} writeData 
  */
 let writeFileHandler = (writeData) => {
-    fs.open('./data/exchangeJson.json', 'a', (err, fd) => {
+    fs.open('./data/exchangeData.json', 'a', (err, fd) => {
         if (err) {
             console.log(err.message);
             eventEmitter.emit('writeFile', writeData);
             return;
         }
-        console.log('Open exchangeJson.json');
+        console.log('Open exchangeData.json');
         fs.write(fd, writeData + '\n', (err) => {
             if (err) {
                 console.log(err.message);
@@ -102,6 +111,9 @@ let writeFileHandler = (writeData) => {
 
 
 eventEmitter.on('writeFile', writeFileHandler);
+
+
+
 
 
 

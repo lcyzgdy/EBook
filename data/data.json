@@ -5,3 +5,4 @@
 {"userId":"866bb860-cd25-11e7-8110-b151030945d0","whoWantSell":"张三","bookName":"三国演义","price":50,"author":["罗贯中"],"publisher":"","remark":1,"uuid":"07042540-ce05-11e7-a474-f191fb2ec2a9","detail":""}
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"算法导论","price":"25元","author":[],"publisher":"机械工业出版社","detail":"","remark":1,"uuid":"1e4334f0-cf25-11e7-92ec-f5bb1978fe86"}
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"计算机网络","price":"25元","author":["谢希仁"],"publisher":"清华大学出版社","detail":"","remark":1,"uuid":"e8e0f510-cf36-11e7-b1f0-8725f5a49498"}
+{"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"多媒体技术基础","price":"35元","author":[],"publisher":"","detail":"","date":1511796877497,"remark":1,"uuid":"7a0ffa90-d388-11e7-b51c-c73f7bb67aa7"}
