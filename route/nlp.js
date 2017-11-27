@@ -204,7 +204,7 @@ let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
                         callback(err, null, null);
                         return;
                     }
-                    callback(null, '查询', )
+                    callback(null, '查询', []);
                     return;
                 })
             })

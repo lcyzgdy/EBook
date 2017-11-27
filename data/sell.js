@@ -100,7 +100,7 @@ eventEmitter.on('readFile', readFileHandler);
 /**
  * 
  * @param {string} keyword
- * @param {(err:Error, result: any[]) => void} callback 
+ * @param {(err:Error, result: any[]) => void} callback
  */
 exports.searchSellData = (keyword, callback) => {
     let data = String(fs.readFileSync('./data/data.json')).split('\n');
@@ -125,7 +125,7 @@ exports.searchSellData = (keyword, callback) => {
 
 /**
  * @param {string} bookName
- * @param {string} author
+ * @param {string[]} author
  * @param {string} publisher
  * @param {string} otherInfo
  * @param {(err: Error, result: any[]) => void} callback
@@ -136,26 +136,35 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
     data.forEach(element => {
         if (element.length > 0) {
             let temp = JSON.parse(element);
-            let tempName = temp['bookName'];
-            let tempAuthor = temp['author'];
-            let tempPublisher = temp['publisher'];
-            let tempDetail = temp['detail'];
             let tempMark = temp['remark'];
             if (tempMark == 1) {
+                let tempName = temp['bookName'];
+                let tempAuthor = temp['author'];
+                let tempPublisher = temp['publisher'];
+                let tempDetail = temp['detail'];
                 let dis = [];
                 //let dis1 = editDistance(tempName, bookName);
-                if (tempName != '' && bookName != '') dis.push(bookName.length - editDistance(tempName, bookName));
+                if (tempName != '' && bookName != '') dis.push(editDistance(tempName, bookName));
                 //let dis2 = editDistance(tempAuthor, author);
-                if (tempAuthor != '' && author != '') dis.push(author.length - editDistance(tempAuthor, author));
+                if (tempAuthor.length > 0 && author.length > 0) {
+                    author.forEach(ele1 => {
+                        tempAuthor.forEach(ele2 => {
+                            dis.push(editDistance(ele1, ele2));
+                        })
+                    })
+                }
                 //let dis3 = editDistance(tempPublisher, publisher);
-                if (tempPublisher != '' && publisher != '') dis.push(publisher.length - editDistance(tempPublisher, publisher));
+                if (tempPublisher != '' && publisher != '') dis.push(editDistance(tempPublisher, publisher));
                 //let dis4 = editDistance(tempDetail, otherInfo);
-                if (tempDetail != '' && otherInfo != '') dis.push(otherInfo.length - editDistance(tempDetail, otherInfo));
+                if (tempDetail != '' && otherInfo != '') dis.push(editDistance(tempDetail, otherInfo));
                 let sum = 0;
                 dis.forEach(distance => {
                     sum += distance;
                 });
-                arr.set(element, dis);
+                console.log(sum);
+                if (sum < 4) {
+                    arr.set(element, dis);
+                }
             }
         }
     });
@@ -179,7 +188,7 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
 
 /**
  * @param {string} bookName
- * @param {string} author
+ * @param {string[]} author
  * @param {string} publisher
  * @param {string} otherInfo
  * @param {(err: Error, result: any[]) => void} callback
@@ -190,26 +199,35 @@ exports.searchBuyDataByDetail = (bookName, author, publisher, otherInfo, callbac
     data.forEach(element => {
         if (element.length > 0) {
             let temp = JSON.parse(element);
-            let tempName = temp['bookName'];
-            let tempAuthor = temp['author'];
-            let tempPublisher = temp['publisher'];
-            let tempDetail = temp['detail'];
             let tempMark = temp['remark'];
             if (tempMark == 2) {
                 let dis = [];
+                let tempName = temp['bookName'];
+                let tempAuthor = temp['author'];
+                let tempPublisher = temp['publisher'];
+                let tempDetail = temp['detail'];
                 //let dis1 = editDistance(tempName, bookName);
-                if (tempName != '' && bookName != '') dis.push(bookName.length - editDistance(tempName, bookName));
-                //let dis2 = editDistance(tempAuthor, author);
-                if (tempAuthor != '' && author != '') dis.push(author.length - editDistance(tempAuthor, author));
+                if (tempName != '' && bookName != '') dis.push(editDistance(tempName, bookName));
+                //let dis2 = editDistance(tempAuthor, author);                if (tempAuthor.length > 0 && author.length > 0) {
+                if (tempAuthor.length > 0 && author.length > 0) {
+                    author.forEach(ele1 => {
+                        tempAuthor.forEach(ele2 => {
+                            dis.push(editDistance(ele1, ele2));
+                        })
+                    })
+                }
                 //let dis3 = editDistance(tempPublisher, publisher);
-                if (tempPublisher != '' && publisher != '') dis.push(publisher.length - editDistance(tempPublisher, publisher));
+                if (tempPublisher != '' && publisher != '') dis.push(editDistance(tempPublisher, publisher));
                 //let dis4 = editDistance(tempDetail, otherInfo);
-                if (tempDetail != '' && otherInfo != '') dis.push(otherInfo.length - editDistance(tempDetail, otherInfo));
+                if (tempDetail != '' && otherInfo != '') dis.push(editDistance(tempDetail, otherInfo));
                 let sum = 0;
                 dis.forEach(distance => {
                     sum += distance;
                 });
-                arr.set(element, dis);
+                console.log(sum);
+                if (sum < 4) {
+                    arr.set(element, dis);
+                }
             }
         }
     });
@@ -229,6 +247,14 @@ exports.searchBuyDataByDetail = (bookName, author, publisher, otherInfo, callbac
         temp.pop();
     callback(null, temp);
 }
+
+
+
+
+
+
+
+
 
 /**
  * 计算编辑距离（用向量值计算内存不足）

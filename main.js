@@ -48,26 +48,31 @@ app.post('/query', (req, res) => {
         queryContent += String(chunk);
     });
     req.on('end', () => {
-        let enityJson = JSON.parse(queryContent);
-        if (enityJson['query-type'] == 'nl') {
-            let moreIntelligent = enityJson['more-intelligent'];
-            let userUuid = enityJson['user-uuid'];
-            if (userUuid === null || userUuid == '') {
-                res.end('{"status": 404}');
-                return;
-            }
-            nlp.myNlpProcess(userUuid, enityJson['query-content'], moreIntelligent, (err, intent, entities) => {
-                if (err) {
+        try {
+            let enityJson = JSON.parse(queryContent);
+            if (enityJson['query-type'] == 'nl') {
+                let moreIntelligent = enityJson['more-intelligent'];
+                let userUuid = enityJson['user-uuid'];
+                if (userUuid === null || userUuid == '') {
                     res.end('{"status": 404}');
                     return;
                 }
-                var json = JSON.parse('{}');
-                json['intent'] = intent;
-                json['entities'] = entities;
-                json['status'] = 200;
-                res.write(JSON.stringify(json));
-                res.end();
-            });
+                nlp.myNlpProcess(userUuid, enityJson['query-content'], moreIntelligent, (err, intent, entities) => {
+                    if (err) {
+                        res.end('{"status": 404}');
+                        return;
+                    }
+                    var json = JSON.parse('{}');
+                    json['intent'] = intent;
+                    json['entities'] = entities;
+                    json['status'] = 200;
+                    res.write(JSON.stringify(json));
+                    res.end();
+                });
+            }
+        }
+        catch (err) {
+            res.end('{"status": 500}');
         }
     });
 });
