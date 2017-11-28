@@ -170,10 +170,11 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
         }
     });
     if (arr.size < 1) {
-        let err = new Error('No result');
-        console.log(err.message);
-        console.log('err7');
-        callback(err, null);
+        //let err = new Error('No result');
+        //console.log(err.message);
+        //console.log('err7');
+        //callback(err, null);
+        callback(null, []);
         return;
     }
     let temp = []
