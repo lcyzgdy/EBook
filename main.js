@@ -7,6 +7,7 @@ let saveImage = require('./route/saveImage');
 let login = require('./route/login');
 let nlp = require('./route/nlp');
 let imageFile = require('./route/findImage');
+let behaviour = require('./route/behaviour');
 
 app.get('/', (req, res) => {
     console.log('test');
@@ -97,6 +98,30 @@ app.post('/query', (req, res) => {
                     res.end(JSON.stringify(result));
                 })
             }
+            else if (queryJson['query-type'] == 'old') {
+                behaviour.behaviour(queryJson['user-uuid'], queryJson, (err, uuid) => {
+                    if (err) {
+                        res.end('{"status":303}');
+                        return;
+                    }
+                    let result = JSON.parse('{}');
+                    result['status'] = 200;
+                    result['uuid'] = uuid;
+                    res.end(JSON.stringify(result));
+                });
+            }
+            else if (queryJson['query-type'] == 'query') {
+                behaviour.query(queryJson['user-uuid'], queryJson, (err, result) => {
+                    if (err) {
+                        res.end('{"status":304}');
+                        return;
+                    }
+                    let json = JSON.parse('{}');
+                    json['status'] = 200;
+                    json['result'] = result;
+                    res.end(JSON.stringify(json));
+                })
+            }
         }
         catch (err) {
             console.log(err.message);
@@ -108,6 +133,7 @@ app.post('/query', (req, res) => {
 let imageFileName = '';
 
 app.post('/upload', (req, res) => {
+    console.log('upload');
     let queryContent = '';
     req.on('data', (chunk) => {
         queryContent += String(chunk);
@@ -128,6 +154,7 @@ app.post('/upload', (req, res) => {
 });
 
 app.get('/download/image/:filename', (req, res) => {
+    console.log('get image');
     let imageUuid = '';
     req.on('data', (chunk) => {
         imageUuid += chunk;

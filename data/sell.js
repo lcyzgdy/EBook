@@ -130,6 +130,28 @@ exports.searchSellData = (keyword, callback) => {
 }
 
 /**
+ * 
+ * @param {string} useruuid 
+ * @param {(err: Error, result: any[]) => void} callback 
+ */
+exports.searchSellDataByUserUuid = (useruuid, callback) => {
+    let data = String(fs.readFileSync('./data/data.json')).split('\n');
+    let arr = [];
+    data.forEach(element => {
+        if (element.length > 0) {
+            let temp = JSON.parse(element);
+            let tempMark = temp['remark'];
+            if (tempMark == 1) {
+                if (temp['userId'] == useruuid) {
+                    arr.push(element);
+                }
+            }
+        }
+    });
+    callback(null, arr);
+}
+
+/**
  * @param {string} bookName
  * @param {string[]} author
  * @param {string} publisher
@@ -193,6 +215,27 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
     callback(null, temp);
 }
 
+/**
+ * 
+ * @param {string} useruuid 
+ * @param {(err: Error, result: any[]) => void} callback 
+ */
+exports.searchBuyDataByUserUuid = (useruuid, callback) => {
+    let data = String(fs.readFileSync('./data/data.json')).split('\n');
+    let arr = [];
+    data.forEach(element => {
+        if (element.length > 0) {
+            let temp = JSON.parse(element);
+            let tempMark = temp['remark'];
+            if (tempMark == 2) {
+                if (temp['userId'] == useruuid) {
+                    arr.push(element);
+                }
+            }
+        }
+    });
+    callback(null, arr);
+}
 
 /**
  * @param {string} bookName

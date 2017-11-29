@@ -9,3 +9,6 @@
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantBuy":"王五","bookName":"计算机图形学的算法基础英文版","author":[],"publisher":"","detail":"","date":1511881567470,"remark":2,"uuid":"a93850e0-d44d-11e7-b705-e97c58741760"}
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantBuy":"王五","bookName":"计算机操作系统","author":[],"publisher":"","detail":"","date":1511933067095,"remark":2,"uuid":"91637670-d4c5-11e7-ac82-b38022eb45c9"}
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"概率与数理统计","price":"","author":[],"publisher":"","detail":"","location":"sadfsafdsa","date":1511971236524,"remark":1,"uuid":"70241ec0-d51e-11e7-91cb-e5a997b54d16"}
+{"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"概率与数理统计","price":"","author":[],"publisher":"","detail":"","date":1511971926818,"remark":1,"uuid":"0b96a020-d520-11e7-af36-8187065bf729"}
+{"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"操作系统","price":"25","publisher":"清华大学出版社","detail":"八成新","location":"A11舍","date":1511975689707,"remark":1,"uuid":"ce71ebb0-d528-11e7-96d8-1b20966522db"}
+{"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantBuy":"王五","bookName":"操作系统","publisher":"清华大学出版社","detail":"八成新","location":"A11舍","date":1511975713897,"remark":2,"uuid":"dcdd0590-d528-11e7-96d8-1b20966522db"}

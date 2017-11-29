@@ -25,6 +25,7 @@ exports.saveImage = (filename, chunk, callback) => {
                 callback(err, null);
                 return;
             }
+            fs.writeFileSync('./data/image/' + newFileName + '.jpg', chunk);
             callback(null, newFileName);
         })
     })
