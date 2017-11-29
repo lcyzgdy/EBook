@@ -5,6 +5,7 @@ let searchSell = require('../data/sell');
 let userInfo = require('../data/userInfo');
 let exchange = require('../data/exchange');
 let community = require('../data/community');
+let findImage = require('./findImage');
 
 /**
 * @param {string} userUuid
@@ -236,7 +237,14 @@ let querySell = (userUuid, entitiesJson, moreIntelligent, location, callback) =>
             //}
         }
         else {
-            callback(null, '', '查询', result); // 返回查询数据库结果
+            let temp = [];
+            result.forEach(one => {
+                let json = JSON.parse(one);
+                json['imageUrl'] = findImage.findImageFileSync(json['uuid']);
+                temp.push(JSON.stringify(json));
+            })
+            //callback(null, '', '查询', result); // 返回查询数据库结果
+            callback(null, '', '查询', temp); // 返回查询数据库结果
         }
     })
 }

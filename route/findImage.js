@@ -26,3 +26,17 @@ exports.findImageFile = (uuid, callback) => {
         callback(null, pathTemp);
     })
 }
+
+exports.findImageFileSync = (uuid) => {
+    let data = fs.readFileSync('./data/image.json');
+    let pathTemp = [];
+    String(data).split('\n').forEach(line => {
+        if (line.length > 0) {
+            let json = JSON.parse(line);
+            if (json['uuid'] == uuid) {
+                pathTemp.push(json['path']);
+            }
+        }
+    })
+    return pathTemp;
+}
