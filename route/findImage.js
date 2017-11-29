@@ -19,9 +19,7 @@ exports.findImageFile = (uuid, callback) => {
             if (line.length > 0) {
                 let json = JSON.parse(line);
                 if (json['uuid'] == uuid) {
-                    json['path'].forEach(one => {
-                        pathTemp.push(one);
-                    })
+                    pathTemp.push(json['path']);
                 }
             }
         })

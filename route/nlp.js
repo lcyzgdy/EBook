@@ -298,7 +298,7 @@ let doExchange = (userUuid, entities, location, callback) => {
  * @param {(err: Error, uuid: string, intent: string, entities: []) => void} callback 
  */
 let doCommunity = (userUuid, entitiesJson, callback) => {
-
+    callback(null, userUuid, "交流", entitiesJson);
 }
 
 

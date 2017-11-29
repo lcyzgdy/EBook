@@ -16,6 +16,12 @@ exports.behaviour = (userUuid, queryJson, callback) => {
     let intent = queryJson['intent'];
     if (intent == '上传卖书') {
         userInfo.searchUserByUuid(userUuid, (err, info) => {
+            if (err) {
+                console.log(__filename + 'err0');
+                console.log(err.message);
+                callback(err, null);
+                return;
+            }
             searchSell.addSellData(userUuid, info['name'], queryJson['book-name'], queryJson['price'], queryJson['author'], queryJson['publisher'], queryJson['detail'], queryJson['location'], (err, uuid) => {
                 if (err) {
                     console.log(__filename + 'err1');
