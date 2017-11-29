@@ -10,9 +10,10 @@ let uuid = require('node-uuid');
  * @param {string[]} author 作者，字符串数组
  * @param {string} publisher 出版社
  * @param {string} detail 其它信息
+ * @param {string} location 地点
  * @param {(err: Error, uuid: string) => void} callback callback
  */
-exports.addSellData = (userId, whoWantSell, bookName, price, author, publisher, detail, callback) => {
+exports.addSellData = (userId, whoWantSell, bookName, price, author, publisher, detail, location, callback) => {
     detail = detail.replace(new RegExp(',', 'g'), '，');//replace(',', '，');
     let data = JSON.parse('{}');
     data['userId'] = userId;    // user的token，md5
@@ -22,6 +23,7 @@ exports.addSellData = (userId, whoWantSell, bookName, price, author, publisher, 
     data['author'] = author;
     data['publisher'] = publisher;
     data['detail'] = detail;
+    data['location'] = location;
     data['date'] = new Date().getTime();
     //data['ImageUri'] = imageUri;
     data['remark'] = 1;         // 0: 已卖出   1:正在卖
@@ -39,9 +41,10 @@ exports.addSellData = (userId, whoWantSell, bookName, price, author, publisher, 
  * @param {string[]} author 作者，字符串数组
  * @param {string} publisher 出版社
  * @param {string} detail 其它信息
+ * @param {string} location 地点
  * @param {(err: Error, uuid: string) => void} callback callback
  */
-exports.addBuyData = (userId, whoWantBuy, bookName, author, publisher, detail, callback) => {
+exports.addBuyData = (userId, whoWantBuy, bookName, author, publisher, detail, location, callback) => {
     detail = detail.replace(new RegExp(',', 'g'), '，');//.replace(',', '，');
     let data = JSON.parse('{}');
     data['userId'] = userId;    // user的token，md5
@@ -50,6 +53,7 @@ exports.addBuyData = (userId, whoWantBuy, bookName, author, publisher, detail, c
     data['author'] = author;
     data['publisher'] = publisher;
     data['detail'] = detail;
+    data['location'] = location;
     data['date'] = new Date().getTime();
     //data['ImageUri'] = imageUri;
     data['remark'] = 2;         // 0: 已卖出   1:正在卖    2:正在买    3:已完成交易

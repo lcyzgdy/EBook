@@ -10,9 +10,10 @@ let community = require('../data/community');
 * @param {string} userUuid
 * @param {string} str string
 * @param {boolean} moreIntelligent
-* @param {(err: Error, uuid:string, intent: string, entities: []) => void} callback (err, intent and enities)
+* @param {string} location
+* @param {(err: Error, uuid: string, intent: string, entities: []) => void} callback (err, intent and enities)
 */
-exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
+exports.myNlpProcess = (userUuid, str, moreIntelligent, location, callback) => {
     let result = '';
     get(String(str), (err, body) => {
         if (err) {
@@ -28,7 +29,7 @@ exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
         let entitiesJson = [];
         let entities = body['entities'];
         if (intent == '交换') {
-            doExchange(userUuid, entities, callback);
+            doExchange(userUuid, entities, location, callback);
             return;
         }
         entities.forEach(element => {
@@ -96,13 +97,13 @@ exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
         //console.log(intent);
         //console.log(enities[0]['resolution']['values']);
         if (intent == '卖出') {
-            sellOut(userUuid, entitiesJson, moreIntelligent, callback);
+            sellOut(userUuid, entitiesJson, moreIntelligent, location, callback);
         }
         else if (intent == 'None') {
             callback(null, intent, null);
         }
         else if (intent == "查询") {
-            querySell(userUuid, entitiesJson, moreIntelligent, callback);
+            querySell(userUuid, entitiesJson, moreIntelligent, location, callback);
         }
         else if (intent == "交流") {
             doCommunity(userUuid, entitiesJson, callback);
@@ -151,9 +152,10 @@ var get = (utterance, callback) => {
  * @param {string} userUuid
  * @param {[]} entitiesJson 
  * @param {boolean} moreIntelligent
+ * @param {string} location
  * @param {(err:Error, uuid:string, intent: string, entities: []) => void} callback
  */
-let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
+let sellOut = (userUuid, entitiesJson, moreIntelligent, location, callback) => {
     if (moreIntelligent) {
         let entitiesFromDatabase = [];
         let bookName = '';
@@ -171,7 +173,7 @@ let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
             return;
         }
         userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
-            searchSell.addSellData(userUuid, userInfo['name'], bookName, price, author, publisher, '', (err, uuid) => {
+            searchSell.addSellData(userUuid, userInfo['name'], bookName, price, author, publisher, '', location, (err, uuid) => {
                 if (err) {
                     callback(err, null, null, null);
                     return;
@@ -190,9 +192,10 @@ let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
  * @param {string} userUuid
  * @param {[]} entitiesJson 
  * @param {boolean} moreIntelligent 
+ * @param {string} location
  * @param {(err: Error, uuid:string, intent: string, entities: []) => void} callback 
  */
-let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
+let querySell = (userUuid, entitiesJson, moreIntelligent, location, callback) => {
     let entitiesFromDatabase = [];
     let bookName = '';
     let author = [];
@@ -208,32 +211,32 @@ let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
             return;
         }
         if (result.length < 1) {
-            if (moreIntelligent && bookName != '' && price != '') {
-                userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
+            //if (moreIntelligent && bookName != '' && price != '') {
+            userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
+                if (err) {
+                    console.log(err.message);
+                    console.log('err3');
+                    callback(err, null, null, null);
+                    return;
+                }
+                searchSell.addBuyData(userUuid, userInfo['name'], bookName, author, publisher, '', location, (err, uuid) => {
                     if (err) {
                         console.log(err.message);
-                        console.log('err3');
+                        console.log('err4');
                         callback(err, null, null, null);
                         return;
                     }
-                    searchSell.addBuyData(userUuid, userInfo['name'], bookName, author, publisher, '', (err, uuid) => {
-                        if (err) {
-                            console.log(err.message);
-                            console.log('err4');
-                            callback(err, null, null, null);
-                            return;
-                        }
-                        callback(null, uuid, '查询', []);
-                        return;
-                    })
+                    callback(null, uuid, '查询', []);
+                    return;
                 })
-            } // 更加智能且信息完整，没有NLP识别结果自动添加数据库
-            else {
-                callback(null, '', '查询', entitiesJson); // 直接返回NLP识别结果
-            }
+            })
+            //} // 更加智能且信息完整，没有NLP识别结果自动添加数据库
+            //else {
+            //    callback(null, '', '查询', entitiesJson); // 直接返回NLP识别结果
+            //}
         }
         else {
-            callback(null, '', '查询2', result); // 返回查询数据库结果
+            callback(null, '', '查询', result); // 返回查询数据库结果
         }
     })
 }
@@ -242,9 +245,10 @@ let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
  * 交换
  * @param {string} userUuid
  * @param {[]} entities 
+ * @param {string} location
  * @param {(err: Error, uuid:string, intent: string, entities: []) => void} callback 
  */
-let doExchange = (userUuid, entities, callback) => {
+let doExchange = (userUuid, entities, location, callback) => {
     var bookFrom = '';
     var bookTo = '';
     var author = [];
@@ -273,7 +277,7 @@ let doExchange = (userUuid, entities, callback) => {
             return;
         }
         if (result.length < 1) {
-            exchange.addExchangeData(userUuid, bookFrom, bookTo, author, publisher, '', (err, uuid) => {
+            exchange.addExchangeData(userUuid, bookFrom, bookTo, author, publisher, '', location, (err, uuid) => {
                 if (err) {
                     callback(err, null, null, null);
                     return;

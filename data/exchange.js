@@ -59,9 +59,10 @@ exports.searchByTo = (userUuid, bookTo, callback) => {
  * @param {[]} author 
  * @param {string} publisher 
  * @param {string} detail 
+ * @param {string} location
  * @param {(err: Error, uuid:string) => void} callback 
  */
-exports.addExchangeData = (userUuid, bookFrom, bookTo, author, publisher, detail, callback) => {
+exports.addExchangeData = (userUuid, bookFrom, bookTo, author, publisher, detail, location, callback) => {
     detail = detail.replace(',', '，');
     let data = JSON.parse('{}');
     data['userId'] = userUuid;    // user的token，md5
@@ -70,6 +71,7 @@ exports.addExchangeData = (userUuid, bookFrom, bookTo, author, publisher, detail
     data['author'] = author;
     data['publisher'] = publisher;
     data['detail'] = detail;
+    data['location'] = location;
     data['date'] = (new Date()).getTime();
     //data['ImageUri'] = imageUri;
     data['remark'] = 1;         // 0: 已交换   1:正在交换

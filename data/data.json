@@ -8,3 +8,4 @@
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"多媒体技术基础","price":"35元","author":[],"publisher":"","detail":"","date":1511796877497,"remark":1,"uuid":"7a0ffa90-d388-11e7-b51c-c73f7bb67aa7"}
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantBuy":"王五","bookName":"计算机图形学的算法基础英文版","author":[],"publisher":"","detail":"","date":1511881567470,"remark":2,"uuid":"a93850e0-d44d-11e7-b705-e97c58741760"}
 {"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantBuy":"王五","bookName":"计算机操作系统","author":[],"publisher":"","detail":"","date":1511933067095,"remark":2,"uuid":"91637670-d4c5-11e7-ac82-b38022eb45c9"}
+{"userId":"b7ea4c80-cf23-11e7-a181-316bd085beff","whoWantSell":"王五","bookName":"概率与数理统计","price":"","author":[],"publisher":"","detail":"","location":"sadfsafdsa","date":1511971236524,"remark":1,"uuid":"70241ec0-d51e-11e7-91cb-e5a997b54d16"}

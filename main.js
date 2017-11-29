@@ -63,7 +63,7 @@ app.post('/query', (req, res) => {
                     res.end('{"status": 510}');
                     return;
                 }
-                nlp.myNlpProcess(userUuid, queryJson['query-content'], moreIntelligent, (err, uuid, intent, entities) => {
+                nlp.myNlpProcess(userUuid, queryJson['query-content'], moreIntelligent, queryJson['location'], (err, uuid, intent, entities) => {
                     if (err) {
                         res.end('{"status": 502}');
                         return;
@@ -74,6 +74,11 @@ app.post('/query', (req, res) => {
                     json['status'] = 200;
                     json['uuid'] = uuid;
                     imageFile.findImageFile(uuid, (err, path) => {
+                        if (err) {
+                            res.write(JSON.stringify(json));
+                            res.end();
+                            return;
+                        }
                         json['image-url'] = path;
                         res.write(JSON.stringify(json));
                         res.end();
@@ -81,7 +86,7 @@ app.post('/query', (req, res) => {
                 });
             }
             else if (queryJson['query-type'] == 'image') {
-                imageFile.findImageFile(queryJson['unknown-uuid'], (err, path) => {
+                imageFile.findImageFile(queryJson['uuid'], (err, path) => {
                     if (err) {
                         res.end('{"status":302}');
                         return;
@@ -108,9 +113,17 @@ app.post('/upload', (req, res) => {
         queryContent += String(chunk);
     });
     req.on('end', () => {
-        let enityJson = JSON.parse(queryContent);
-        if (queryContent['type'] == 'image') {
-        }
+        let json = JSON.parse(queryContent);
+        saveImage.saveImage(json['uuid'], json['content'], (err, uri) => {
+            if (err) {
+                res.end('{"status":605}');
+                return;
+            }
+            let result = JSON.parse('{}');
+            result['image-url'] = uri;
+            result['status'] = 200;
+            res.end(JSON.stringify(result));
+        })
     });
 });
 

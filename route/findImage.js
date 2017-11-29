@@ -9,9 +9,9 @@ let fs = require('fs');
 exports.findImageFile = (uuid, callback) => {
     fs.readFile('./data/image.json', (err, data) => {
         if (err) {
-            console.log('err11');
+            console.log(__filename + 'err11');
             console.log(err.message);
-            callback(err);
+            callback(err, null);
             return;
         }
         let pathTemp = [];
