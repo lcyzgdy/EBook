@@ -5,6 +5,7 @@ let app = express();
 let saveImage = require('./route/saveImage');
 let login = require('./route/login');
 let nlp = require('./route/nlp');
+let imageFile = require('./route/findImage');
 
 app.get('/', (req, res) => {
     console.log('test');
@@ -75,6 +76,18 @@ app.post('/query', (req, res) => {
                     res.end();
                 });
             }
+            else if (queryJson['query-type'] == 'image') {
+                imageFile.findImageFile(queryJson['user-uuid'], (err, path) => {
+                    if (err) {
+                        res.end('{"status":302}');
+                        return;
+                    }
+                    let result = JSON.parse('{}');
+                    result['status'] = 200;
+                    result['path'] = path;
+                    res.end(JSON.stringify(result));
+                })
+            }
         }
         catch (err) {
             console.log(err.message);
@@ -93,10 +106,19 @@ app.post('/upload', (req, res) => {
     req.on('end', () => {
         let enityJson = JSON.parse(queryContent);
         if (queryContent['type'] == 'image') {
-
         }
     });
 });
+
+app.get('/download/image', (req, res) => {
+    let imageUuid = '';
+    req.on('data', (chunk) => {
+        imageUuid += chunk;
+    })
+    req.on('end', () => {
+        res.sendFile('./data/image/' + imageFileName);
+    })
+})
 
 app.listen(8086);
 console.log('OK');

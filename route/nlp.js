@@ -83,13 +83,13 @@ exports.myNlpProcess = (userUuid, str, moreIntelligent, callback) => {
             else if (element['type'] == '价格') {
                 var priceInfo = JSON.parse('{}');
                 priceInfo['type'] = '价格';
-                priceInfo['content'] = element['entity'];
+                priceInfo['text'] = element['entity'];
                 entitiesJson.push(priceInfo);
             }
             else if (element['type'] == 'builtin.currency') {
                 var priceInfo = JSON.parse('{}');
                 priceInfo['type'] = '价格';
-                priceInfo['content'] = element['entity'];
+                priceInfo['text'] = element['entity'];
                 entitiesJson.push(priceInfo);
             }
         });
@@ -164,7 +164,7 @@ let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
             if (element['type'] == '书名') bookName = element['text'];
             else if (element['type'] == '作者') author.push(element['text']);
             else if (element['type'] == '出版社') publisher = element['text'];
-            else if (element['type'] == '价格') price = element['content'];
+            else if (element['type'] == '价格') price = element['text'];
         })
         userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
             searchSell.addSellData(userUuid, userInfo['name'], bookName, price, author, publisher, '', (err, uuid) => {

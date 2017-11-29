@@ -13,7 +13,7 @@ let uuid = require('node-uuid');
  * @param {(err: Error, uuid: string) => void} callback callback
  */
 exports.addSellData = (userId, whoWantSell, bookName, price, author, publisher, detail, callback) => {
-    detail = detail.replace(',', '，');
+    detail = detail.replace(new RegExp(',', 'g'), '，');//replace(',', '，');
     let data = JSON.parse('{}');
     data['userId'] = userId;    // user的token，md5
     data['whoWantSell'] = whoWantSell;    // 卖家
@@ -42,7 +42,7 @@ exports.addSellData = (userId, whoWantSell, bookName, price, author, publisher, 
  * @param {(err: Error, uuid: string) => void} callback callback
  */
 exports.addBuyData = (userId, whoWantBuy, bookName, author, publisher, detail, callback) => {
-    detail = detail.replace(',', '，');
+    detail = detail.replace(new RegExp(',', 'g'), '，');//.replace(',', '，');
     let data = JSON.parse('{}');
     data['userId'] = userId;    // user的token，md5
     data['whoWantBuy'] = whoWantBuy;    // 卖家
@@ -103,7 +103,7 @@ eventEmitter.on('readFile', readFileHandler);
  * @param {(err:Error, result: any[]) => void} callback
  */
 exports.searchSellData = (keyword, callback) => {
-    let data = String(fs.readFileSync('./data/data.json')).split('\n');
+    let data = String(fs.readFileSync('./data/data.json')).replace(new RegExp('\\', 'g'), '').split('\n');
     let arr = new Map();
     data.forEach(element => {
         let dis = element.length - editDistance(element, keyword);
@@ -133,7 +133,7 @@ exports.searchSellData = (keyword, callback) => {
  * @param {(err: Error, result: any[]) => void} callback
  */
 exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callback) => {
-    let data = String(fs.readFileSync('./data/data.json')).split('\n');
+    let data = String(fs.readFileSync('./data/data.json')).split('\n'); //.replace(new RegExp('\\', 'g'), '')
     let arr = new Map();
     data.forEach(element => {
         if (element.length > 0) {
@@ -244,7 +244,8 @@ exports.searchBuyDataByDetail = (bookName, author, publisher, otherInfo, callbac
     }
     let temp = []
     arr.forEach((value, key, arr) => {
-        temp.push(key);
+        console.log(key);
+        temp.push(JSON.parse(key));
     });
     temp = temp.sort((a, b) => {
         return arr.get(a) > arr.get(b);

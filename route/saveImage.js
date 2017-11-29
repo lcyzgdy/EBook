@@ -1,4 +1,5 @@
 let fs = require('fs');
+let uuid = require('node-uuid');
 
 /**
  * 
@@ -7,7 +8,7 @@ let fs = require('fs');
  * @param {(err:Error, imageUri: string) => void} callback
  */
 exports.saveImage = (filename, chunk, callback) => {
-    fileName += (new Date()).getTime() + '_Image.png';
+    fileName += uuid.v1() + '.png';
     fs.writeFile(fileName, chunk, (err) => {
         if (err) {
             callback(err, null);
