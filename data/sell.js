@@ -174,7 +174,7 @@ exports.searchSellDataByDetail = (bookName, author, publisher, otherInfo, callba
                 //let dis1 = editDistance(tempName, bookName);
                 if (tempName != '' && bookName != '') dis.push(editDistance(tempName, bookName));
                 //let dis2 = editDistance(tempAuthor, author);
-                if (tempAuthor.length > 0 && author.length > 0) {
+                if (tempAuthor != undefined && tempAuthor.length > 0 && author.length > 0) { // Fixed bug
                     author.forEach(ele1 => {
                         tempAuthor.forEach(ele2 => {
                             dis.push(editDistance(ele1, ele2));
@@ -260,7 +260,7 @@ exports.searchBuyDataByDetail = (bookName, author, publisher, otherInfo, callbac
                 //let dis1 = editDistance(tempName, bookName);
                 if (tempName != '' && bookName != '') dis.push(editDistance(tempName, bookName));
                 //let dis2 = editDistance(tempAuthor, author);                if (tempAuthor.length > 0 && author.length > 0) {
-                if (tempAuthor.length > 0 && author.length > 0) {
+                if (tempAuthor != undefined && tempAuthor.length > 0 && author.length > 0) {
                     author.forEach(ele1 => {
                         tempAuthor.forEach(ele2 => {
                             dis.push(editDistance(ele1, ele2));
