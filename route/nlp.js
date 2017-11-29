@@ -166,6 +166,10 @@ let sellOut = (userUuid, entitiesJson, moreIntelligent, callback) => {
             else if (element['type'] == '出版社') publisher = element['text'];
             else if (element['type'] == '价格') price = element['text'];
         })
+        if (bookName == '' && price == '') {
+            callback(null, '', '卖出', entitiesJson);
+            return;
+        }
         userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
             searchSell.addSellData(userUuid, userInfo['name'], bookName, price, author, publisher, '', (err, uuid) => {
                 if (err) {
@@ -204,27 +208,32 @@ let querySell = (userUuid, entitiesJson, moreIntelligent, callback) => {
             return;
         }
         if (result.length < 1) {
-            userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
-                if (err) {
-                    console.log(err.message);
-                    console.log('err3');
-                    callback(err, null, null, null);
-                    return;
-                }
-                searchSell.addBuyData(userUuid, userInfo['name'], bookName, author, publisher, '', (err, uuid) => {
+            if (moreIntelligent && bookName != '' && price != '') {
+                userInfo.searchUserByUuid(userUuid, (err, userInfo) => {
                     if (err) {
                         console.log(err.message);
-                        console.log('err4');
+                        console.log('err3');
                         callback(err, null, null, null);
                         return;
                     }
-                    callback(null, uuid, '查询', []);
-                    return;
+                    searchSell.addBuyData(userUuid, userInfo['name'], bookName, author, publisher, '', (err, uuid) => {
+                        if (err) {
+                            console.log(err.message);
+                            console.log('err4');
+                            callback(err, null, null, null);
+                            return;
+                        }
+                        callback(null, uuid, '查询', []);
+                        return;
+                    })
                 })
-            })
+            } // 更加智能且信息完整，没有NLP识别结果自动添加数据库
+            else {
+                callback(null, '', '查询', entitiesJson); // 直接返回NLP识别结果
+            }
         }
         else {
-            callback(null, '', '查询', result);
+            callback(null, '', '查询2', result); // 返回查询数据库结果
         }
     })
 }
@@ -285,7 +294,7 @@ let doExchange = (userUuid, entities, callback) => {
  * @param {(err: Error, uuid: string, intent: string, entities: []) => void} callback 
  */
 let doCommunity = (userUuid, entitiesJson, callback) => {
-    
+
 }
 
 

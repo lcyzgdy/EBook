@@ -1,6 +1,7 @@
 let http = require('http');
 let express = require('express');
 let app = express();
+let path = require('path');
 
 let saveImage = require('./route/saveImage');
 let login = require('./route/login');
@@ -72,12 +73,15 @@ app.post('/query', (req, res) => {
                     json['entities'] = entities;
                     json['status'] = 200;
                     json['uuid'] = uuid;
-                    res.write(JSON.stringify(json));
-                    res.end();
+                    imageFile.findImageFile(uuid, (err, path) => {
+                        json['image-url'] = path;
+                        res.write(JSON.stringify(json));
+                        res.end();
+                    })
                 });
             }
             else if (queryJson['query-type'] == 'image') {
-                imageFile.findImageFile(queryJson['user-uuid'], (err, path) => {
+                imageFile.findImageFile(queryJson['unknown-uuid'], (err, path) => {
                     if (err) {
                         res.end('{"status":302}');
                         return;
@@ -110,13 +114,15 @@ app.post('/upload', (req, res) => {
     });
 });
 
-app.get('/download/image', (req, res) => {
+app.get('/download/image/:filename', (req, res) => {
     let imageUuid = '';
     req.on('data', (chunk) => {
         imageUuid += chunk;
     })
     req.on('end', () => {
-        res.sendFile('./data/image/' + imageFileName);
+        console.log('Send image');
+        imageUuid = req.params.filename;
+        res.sendFile(__dirname + '/data/image/' + imageUuid);
     })
 })
 
